@@ -1,6 +1,7 @@
 # 25/Apr/2025
 
 - Delete `.git` directories after bundle install to reduce slug size.
+- Enable globstar so `**` behaves as expected when deleting `.git` directories.
 
 # 26/Nov/2024
 
