@@ -1,3 +1,7 @@
+# 14/Sep/2026
+
+- Bundler 4 support. `bundle install` uses inlined env vars instead of deprecated flags.
+
 # 25/Apr/2025
 
 - Delete git-related directories after bundle install to reduce slug size.
