@@ -36,7 +36,13 @@ function indent() {
 echo "-----> Installing Gemfile.next gems"
 cd $BUILD_DIR
 set -o pipefail # Enable pipefail so failure exit code from bundle install will not be lost by pipe to indent.
-BUNDLE_GEMFILE=Gemfile.next BUNDLE_WITHOUT='development:test' BUNDLE_PATH=vendor/bundle BUNDLE_BIN=vendor/bundle/bin BUNDLE_DEPLOYMENT=1 bundle install -j4 | indent
+
+# Installs binstubs in vendor/bundle/bin.next so existing Gemfile-hardcoded-default binstubs in vendor/bundle/bin are
+# not replaced with Gemfile.next-hardcoded-default binstubs.
+#
+# vendor/bundle/bin.next is not on PATH, so to use these binstubs, use the full path or add bin.next to PATH
+BUNDLE_GEMFILE=Gemfile.next BUNDLE_WITHOUT='development:test' BUNDLE_PATH=vendor/bundle BUNDLE_BIN=vendor/bundle/bin.next BUNDLE_DEPLOYMENT=1 bundle install -j4 | indent
+
 bundle_install_status=$?
 set +o pipefail # Disable pipefail, only needed for above command as it is pipes to indent.
 
@@ -92,13 +98,14 @@ function is_next_server() {
   return
 }
 
-if [ -n "$next_server_ids" ]; then
-  if is_next_server; then
-    echo "---------------------> Setting DEPENDENCIES_NEXT=true"
-    export DEPENDENCIES_NEXT=true
-    echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile.next"
-    export BUNDLE_GEMFILE=$HOME/Gemfile.next
-  fi
+if [ -n "$next_server_ids" ] && is_next_server; then
+  echo "---------------------> Setting DEPENDENCIES_NEXT=true"
+  export DEPENDENCIES_NEXT=true
+  echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile.next"
+  export BUNDLE_GEMFILE=$HOME/Gemfile.next
+else
+  echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile"
+  export BUNDLE_GEMFILE=$HOME/Gemfile
 fi
 
 EOF
