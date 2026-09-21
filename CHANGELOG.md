@@ -1,13 +1,14 @@
-# 18/Sep/2026
+# 21/Sep/2026
 
-- Fix: dynos not selected by `DEPENDENCIES_NEXT_DYNOS`/`DEPENDENCIES_NEXT_CI_NODES` could still boot
-  with `Gemfile.next`. `BUNDLE_BIN=vendor/bundle/bin` on the `Gemfile.next` install regenerated the
-  `bundle` binstub in `vendor/bundle/bin`, baking in `Gemfile.next` as its own fallback default
-  (since that install runs with `BUNDLE_GEMFILE=Gemfile.next`). If nothing else on `PATH` shadowed
-  that binstub, an unset `BUNDLE_GEMFILE` resolved to `Gemfile.next` instead of `Gemfile`. Dropped
-  `BUNDLE_BIN` from that install (it doesn't need to generate binstubs) and `.profile.d` now
-  explicitly exports `BUNDLE_GEMFILE=$HOME/Gemfile` for non-selected dynos/nodes instead of leaving
-  it unset.
+- Always set `BUNDLE_GEMFILE=Gemfile` unless in a `Gemfile.next` environment. Previously `BUNDLE_GEMFILE` would not
+  be set.
+- Generate `Gemfile.next`-hardcoded binstubs in the new directory `vendor/bundle/bin.next` instead of replacing
+  `Gemfile`-hardcoded binstubs generated in `vendor/bundle/bin` by the Heroku Ruby buildpack. Please note
+  `vendor/bundle/bin.next` is **not** on the `PATH`.
+- These above two changes resolve a bug after deleting `bin/bundle` from your app as recommended by Heroku, which would
+  cause `Gemfile.next` to be used for any `bundle exec` commands regardless of the `DEPENDENCIES_NEXT_DYNOS` value.
+  Thank you to [Stefan Richter @stoem](https://github.com/stoem) for your work on fixing this.
+
 
 # 14/Sep/2026
 

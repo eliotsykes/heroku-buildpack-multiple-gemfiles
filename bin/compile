@@ -104,11 +104,6 @@ if [ -n "$next_server_ids" ] && is_next_server; then
   echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile.next"
   export BUNDLE_GEMFILE=$HOME/Gemfile.next
 else
-  # Explicitly set BUNDLE_GEMFILE rather than leaving it unset, so that this script is
-  # the sole source of truth. A regenerated `bundle` binstub in vendor/bundle/bin can end up
-  # with Gemfile.next hardcoded as its own fallback default (since it was generated while
-  # BUNDLE_GEMFILE=Gemfile.next was set during the bundle install above), which would silently
-  # override an unset BUNDLE_GEMFILE here.
   echo "---------------------> Setting BUNDLE_GEMFILE=$HOME/Gemfile"
   export BUNDLE_GEMFILE=$HOME/Gemfile
 fi
