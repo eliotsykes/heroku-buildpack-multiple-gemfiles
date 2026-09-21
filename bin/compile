@@ -36,7 +36,13 @@ function indent() {
 echo "-----> Installing Gemfile.next gems"
 cd $BUILD_DIR
 set -o pipefail # Enable pipefail so failure exit code from bundle install will not be lost by pipe to indent.
-BUNDLE_GEMFILE=Gemfile.next BUNDLE_WITHOUT='development:test' BUNDLE_PATH=vendor/bundle BUNDLE_DEPLOYMENT=1 bundle install -j4 | indent
+
+# Installs binstubs in vendor/bundle/bin.next so existing Gemfile-hardcoded-default binstubs in vendor/bundle/bin are
+# not replaced with Gemfile.next-hardcoded-default binstubs.
+#
+# vendor/bundle/bin.next is not on PATH, so to use these binstubs, use the full path or add bin.next to PATH
+BUNDLE_GEMFILE=Gemfile.next BUNDLE_WITHOUT='development:test' BUNDLE_PATH=vendor/bundle BUNDLE_BIN=vendor/bundle/bin.next BUNDLE_DEPLOYMENT=1 bundle install -j4 | indent
+
 bundle_install_status=$?
 set +o pipefail # Disable pipefail, only needed for above command as it is pipes to indent.
 
